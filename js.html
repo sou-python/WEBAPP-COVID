@@ -1,0 +1,242 @@
+<script type="text/javascript">
+  // 読み込んだらフェードアウト
+$(window).load(function () {
+    // 消えるタイミングはお好みで
+    $('.loading').delay(500).fadeOut(300);
+});
+// 10秒待っても読み込みが終わらない時は強制的にローディング画面をフェードアウト
+function stopload(){
+    $('.loading').delay(1000).fadeOut(700);
+}
+setTimeout('stopload()',1000);
+
+google.script.run.withSuccessHandler(return_url).get_url();
+
+google.script.url.getLocation(function(location) {
+  NAME = location.parameter.name;
+  EMAIL = location.parameter.email;
+});
+
+$(function(){
+    $('.js-modal-open').on('click',function(){
+        $('.js-modal').fadeIn();
+        return false;
+    });
+    $('.js-modal-close').on('click',function(){
+        $('.js-modal').fadeOut();
+        return false;
+    });
+});
+
+
+$(document).ready(function() {
+  $('.searched').tablesorter();
+});
+
+$(".searched_container").hide()
+
+function return_url(list){
+  INDEX_URL = JSON.parse(list);
+}
+
+//分類を変更したときに発火する
+function change_date(){
+  //現在選択されてる分類を取得
+  let search_types = document.getElementById("search_types").value
+  // 分類を元にキノコの種類をリビルド
+  if(search_types == "種類を選択してください" | search_types == "感染者数"){
+    $("#prefectures").show();
+  }
+  else{
+    $("#prefectures").hide();
+  }
+}
+
+/*-----------検索ボタン---------------------*/
+function search_check(){
+  //現在選択されてる分類を取得
+  let search_types = document.getElementById("search_types").value
+  let prefectures = document.getElementById("prefectures").value
+  let input_date = document.getElementById("input_date").value
+  let elements = {}
+  elements.種類 = search_types;
+  elements.都道府県 = prefectures;
+  elements.日付 = input_date;
+
+  if(search_types == "種類を選択してください"){
+    swal("必須項目は入力してね");
+  }else{
+    // データを取得する
+    swal(`検索しますか？`, {
+      buttons: {
+        cancel: "いいえ",
+        catch: {
+          text: "はい",
+          value: "catch",
+        }
+      }
+    })
+    .then((value) => {
+      switch (value) {
+        case "cancel":
+          break;
+    
+        case "catch":
+          $(".searched_container").hide()
+          notie.alert({ type: 1, text: '検索中', stay: true, position: 'bottom'});
+          document.getElementById('js-modal-close').click();
+          google.script.run.withSuccessHandler(onSearched).readRecords(elements);
+          break;
+      }
+    });
+  }
+}
+
+function post_index(){
+  let form = document.createElement('form');
+  let request = document.createElement('input');
+  let url = `${INDEX_URL}?name=${NAME}&email=${EMAIL}&p=index`
+  form.method = 'POST';
+  form.action = url;
+  request.type = 'hidden'; //入力フォームが表示されないように
+  request.name = 'text';
+  request.value = "";
+  form.appendChild(request);
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function post_inquiry(){
+  let form = document.createElement('form');
+  let request = document.createElement('input');
+  let url = `${INDEX_URL}?name=${NAME}&email=${EMAIL}&p=inquiry`
+  form.method = 'POST';
+  form.action = url;
+  request.type = 'hidden'; //入力フォームが表示されないように
+  request.name = 'text';
+  request.value = "";
+  form.appendChild(request);
+  document.body.appendChild(form);
+  form.submit();
+}
+
+// 検索結果
+function onSearched(list){
+  $(".searched_container").show()
+  let datas = JSON.parse(list);//dataをJSONに変換
+  let html =  "";
+  html += `<table border="1" cellspacing="1" align="center" class="searched" id="searched">`;
+  for(let i in datas){
+    if(i==0){
+      html += `<thead>`
+      html += `<tr>`
+      for(let j in datas[i]){
+        html += `<th>${datas[i][j]}</th>`
+      }
+      html += `</tr>`
+      html += `</thead>`
+      html += `<tbody>`
+    }
+    else{
+      html += `<tr>`
+      for(let j in datas[i]){
+        html += `<td>${datas[i][j]}</td>`
+      }
+      html += `</tr>`
+    }
+  }
+  html += '</tbody>';
+  html += '</table>';
+
+  var elem = document.getElementById('searched');
+  if (elem.hasChildNodes()) {
+    $("#searched").DataTable().destroy();
+    $('#searched').empty();
+  }
+  
+  //ドロップダウンメニューを設置する
+  document.getElementById("searched").innerHTML = html;  //以下のbody内のidがdropの部分にここで作ったhtmlを追記
+  $("#searched").DataTable({
+    // 件数切替機能 無効
+    lengthChange: true,
+    // 検索機能 無効
+    searching: false,
+    // ソート機能 無効
+    ordering: true,
+    // 情報表示 無効
+    info: false,
+    // ページング機能 無効
+    paging: true,
+    language: {
+      "decimal": ".",
+      "thousands": ",",
+      "sProcessing": "処理中...",
+      "sLengthMenu": "_MENU_ 件表示",
+      "sZeroRecords": "データはありません。",
+      "sInfo": " _TOTAL_ 件中 _START_ から _END_ まで表示",
+      "sInfoEmpty": " 0 件中 0 から 0 まで表示",
+      "sInfoFiltered": "（全 _MAX_ 件より抽出）",
+      "sInfoPostFix": "",
+      "sSearch": "検索:",
+      "sUrl": "",
+      "oPaginate": {
+      "sFirst": "先頭",
+      "sPrevious": "前",
+      "sNext": "次",
+      "sLast": "最終"
+      }
+    },
+    lengthMenu: [ 50, 100, 200 ]
+  });
+  swal("検索したよ")
+  notie.hideAlerts()
+}
+
+
+function postForm() {
+  var form = document.createElement('form');
+  var request = document.createElement('input');
+  form.method = 'POST';
+  form.action = `${INDEX_URL}`;
+  request.type = 'hidden'; //入力フォームが表示されないように
+  request.name = 'text';
+  request.value = "";
+  form.appendChild(request);
+  document.body.appendChild(form);
+  form.submit();
+}
+
+function readTableRecords(){
+  // table要素を取得
+  var mytable = document.getElementById('searched');
+  var htmlStr = [];
+
+  for (var i=0; i < mytable.rows.length; i++) {
+    for (var j=0; j < mytable.rows[i].cells.length; j++) {
+      let value = mytable.rows[i].cells[j].outerHTML.toString();
+      value = value.replace(/<th(.+)">|<th>|<\/th>|<td>|<td(.+)">|<\/td>/g,"");
+      htmlStr.push({"行": i, "列": j, value});
+    }
+  }
+  return htmlStr
+}
+
+function exportToExcel(){
+  if($(".searched_container").is(":hidden")) {
+    swal("テーブルがありません");
+  }else{
+    let search_types = document.getElementById("search_types").value;
+    let prefectures = document.getElementById("prefectures").value;
+    let input_date = document.getElementById("input_date").value;
+    let filename = search_types;
+    if(prefectures) filename += `_${prefectures}`;
+    if(input_date) filename += `_${input_date}`;
+    filename += ".xls"
+    $("#searched").table2excel({
+      filename: filename,
+      fileext:".xls"
+    });
+  }
+}
+
+</script>

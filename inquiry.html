@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <!--JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <base target="_top">
+  <!-- sweet alert -->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <?!= HtmlService.createHtmlOutputFromFile('css_inquiry').getContent(); ?>
+</head>
+
+<body>
+  <!--　▼ ナビゲーション　 -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="javascript:void(0)">レポート用</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="javascript:void(0)" onclick="post_index()">検索画面</a></li>
+          <li class="active"><a href="javascript:void(0)" onclick="post_inquiry()">FAQ・問い合わせ</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </nav>
+  <!--　▲ ナビゲーション　 -->
+
+  <div class="qa-list mts">
+    <dl class="qa">
+      <dt>死亡者数を選択すると、都道府県が選択できないです。</dt>
+      <dd>
+        <p>設定できる条件は以下項目です。<br>
+          <li>感染者数　＝　都道府県　×　日付</li>
+          <li>死亡者数　＝　日付</li>
+        </p>
+      </dd>
+    </dl>
+    <dl class="qa">
+      <dt>検索結果が出てこないです。</dt>
+      <dd>
+        <p>条件によっては出てこない時もあります。
+        </p>
+      </dd>
+    </dl>
+    <dl class="qa">
+      <dt>データソースはどこなのでしょうか。</dt>
+      <dd>
+        <p><a href="https://corona.go.jp/dashboard/">新型コロナウイルス等感染症対策推進室（内閣官房）</a>です。
+        </p>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="Form">
+    <div class="Form-Item">
+      <p class="Form-Item-Label isMsg"><span class="Form-Item-Label-Required">必須</span>問い合わせ内容</p>
+      <textarea class="Form-Item-Textarea" id="contents"></textarea>
+    </div>
+    <input type="submit" class="Form-Btn" onclick = "push_btn()" value="送信する">
+  </div>
+  <?!= HtmlService.createHtmlOutputFromFile('js_inquiry').getContent(); ?>
+</body>
+
+<footer>
+  <p>Copyright (C)</p>
+</footer>
+
+</html>
