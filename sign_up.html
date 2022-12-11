@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <base target="_top">
-  <?!= HtmlService.createHtmlOutputFromFile('css_login').getContent(); ?>
+   <base target="_top">
+   <?!= HtmlService.createHtmlOutputFromFile('css').getContent(); ?>
   <!-- sweet alert -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <!-- バナー通知 -->
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
   <script src="https://unpkg.com/notie"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
  </head>
  <body>
    <div class="form-wrapper">
-     <h1>ログイン</h1>
+     <h1>新規登録</h1>
       <div class="form-item">
         <label for="mailaddress"></label>
         <input id="mailaddress" type="mailaddress" name="mailaddress" required="required" placeholder="メールアドレス"></input>
@@ -21,13 +21,17 @@
         <label for="password"></label>
         <input id="password" type="password" name="password" required="required" placeholder="パスワード"></input>
       </div>
-      <div class="button-panel">
-        <button onclick="login_check()" class="button" title="Login" value="Login">Login</button>
+      <div class="form-item">
+        <label for="Account_name"></label>
+        <input id="Account_name" type="Account_name" name="Account_name" required="required" placeholder="ビジネスネーム"></input>
       </div>
-      <div class="createAccount">
-        <a href="javascript:void(0)" onclick="post_signup()">新規登録</a>
+      <div class="button-panel">
+        <button onclick="login_check()" class="button" title="Login" value="Login">新規登録</button>
+      </div>
+      <div class="login">
+        <a href="javascript:void(0)" onclick="post_index()">ログイン画面に戻る</a>
       </div>
    </div>
-   <?!= HtmlService.createHtmlOutputFromFile('js_login').getContent(); ?>
+   <?!= HtmlService.createHtmlOutputFromFile('js').getContent(); ?>
  </body>
 </html>
